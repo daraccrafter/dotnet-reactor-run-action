@@ -52,10 +52,6 @@ runs:
         fi
       shell: bash
 
-    - name: List files in directory (Debugging)
-      run: ls -R ${{ inputs.working_directory || '.' }}
-      shell: bash
-
     - name: Execute .NET Reactor for multiple files (in-place)
       run: |
         command="${{ env.DOTNETREACTORROOT }}/dotNET_Reactor"
