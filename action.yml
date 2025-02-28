@@ -52,6 +52,10 @@ runs:
         fi
       shell: bash
 
+    - name: List files in directory (Debugging)
+      run: ls -R ${{ inputs.working_directory || '.' }}
+      shell: bash
+
     - name: Execute .NET Reactor for multiple files (in-place)
       run: |
         command="${{ env.DOTNETREACTORROOT }}/dotNET_Reactor"
@@ -61,7 +65,7 @@ runs:
         else
           chmod +x "$command"
         fi
-
+        echo "${{ inputs.working_directory}}"
         # Change to the working directory if specified
         if [[ -n "${{ inputs.working_directory }}" ]]; then
           echo "Changing to working directory: ${{ inputs.working_directory }}"
@@ -74,6 +78,11 @@ runs:
         for file in "${FILES[@]}"; do
           file=$(echo $file | xargs) # Trim spaces
           if [[ -n "$file" ]]; then
+            if [[ ! -f "$file" ]]; then
+              echo "File not found: $file"
+              exit 1
+            fi
+
             args=" -file '$file' -targetfile '$file'" # Same input & output file
 
             [[ -n "${{ inputs.project_file }}" ]] && args+=" -project '${{ inputs.project_file }}'"
