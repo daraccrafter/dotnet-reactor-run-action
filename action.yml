@@ -39,7 +39,7 @@ runs:
 
           echo "Unzipping .NET Reactor to ${extract_dir}..."
           if [ "${{ runner.os }}" = "Windows" ]; then
-            7z x dotNetReactor.zip -o./${extract_dir} || { echo "Unzip failed"; exit 1; }
+            7z x -y dotNetReactor.zip -o./${extract_dir} || { echo "Unzip failed"; exit 1; }
           else
             unzip dotNetReactor.zip -d ${extract_dir} || { echo "Unzip failed"; exit 1; }
           fi
