@@ -14,6 +14,10 @@ inputs:
   additional_arguments:
     description: '(Additional) command-line parameters.'
     required: false
+  working_directory:
+    description: 'Working directory for resolving relative paths.'
+    required: false
+    default: '.'
 
 runs:
   using: "composite"
@@ -56,6 +60,12 @@ runs:
           command="${{ env.DOTNETREACTORROOT }}/dotNET_Reactor.Console.exe"
         else
           chmod +x "$command"
+        fi
+
+        # Change to the working directory if specified
+        if [[ -n "${{ inputs.working_directory }}" ]]; then
+          echo "Changing to working directory: ${{ inputs.working_directory }}"
+          cd "${{ inputs.working_directory }}" || { echo "Failed to change directory"; exit 1; }
         fi
 
         # Split input_paths into an array (supports comma, space, or newline-separated lists)
