@@ -54,7 +54,16 @@ runs:
           echo "DOTNETREACTORROOT=$PWD/${extract_dir}" >> $GITHUB_ENV
         fi
       shell: bash
-
+    - name: Configure License
+          run: |
+            if [ -n "${{ inputs.license }}" ]; then
+              if echo "${{ inputs.license }}" | grep -Eq '(\.license|\.v3lic)$'; then
+                cp "${{ inputs.license }}" ${{ env.DOTNETREACTORROOT }}/license.v3lic
+              else
+                echo "${{ inputs.license }}" | base64 --decode > ${{ env.DOTNETREACTORROOT }}/license.v3lic
+              fi
+            fi
+          shell: bash
     - name: Execute .NET Reactor for multiple files (in-place)
       run: |
         command="${{ env.DOTNETREACTORROOT }}/dotNET_Reactor"
