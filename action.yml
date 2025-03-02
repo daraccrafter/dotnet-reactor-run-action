@@ -21,6 +21,9 @@ inputs:
   key_file:
     description: 'Path to the strong-name key file (.snk) for signing assemblies.'
     required: false
+  license:
+    description: 'Provide the .NET Reactor license as either a file path or a base64-encoded string. If no license is defined .NET Reactor runs as demo version.'
+    required: false
 
 runs:
   using: "composite"
