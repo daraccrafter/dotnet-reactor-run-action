@@ -18,6 +18,9 @@ inputs:
     description: 'Working directory for resolving relative paths.'
     required: false
     default: '.'
+  key_file:
+    description: 'Path to the strong-name key file (.snk) for signing assemblies.'
+    required: false
 
 runs:
   using: "composite"
@@ -61,14 +64,14 @@ runs:
         else
           chmod +x "$command"
         fi
-        echo "${{ inputs.working_directory}}"
+
         # Change to the working directory if specified
         if [[ -n "${{ inputs.working_directory }}" ]]; then
           echo "Changing to working directory: ${{ inputs.working_directory }}"
           cd "${{ inputs.working_directory }}" || { echo "Failed to change directory"; exit 1; }
         fi
 
-        # Split input_paths into an array (supports comma, space, or newline-separated lists)
+        # Split input_paths into an array
         IFS=',' read -ra FILES <<< "${{ inputs.input_paths }}"
 
         for file in "${FILES[@]}"; do
@@ -82,6 +85,7 @@ runs:
             args=" -file '$file' -targetfile '$file'" # Same input & output file
 
             [[ -n "${{ inputs.project_file }}" ]] && args+=" -project '${{ inputs.project_file }}'"
+            [[ -n "${{ inputs.key_file }}" ]] && args+=" -keyfile '${{ inputs.key_file }}'"
             [[ -n "${{ inputs.additional_arguments }}" ]] && args+=" ${{ inputs.additional_arguments }}"
 
             echo "Running: $command $args"
