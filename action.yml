@@ -85,7 +85,7 @@ runs:
             args=" -file '$file' -targetfile '$file'" # Same input & output file
 
             [[ -n "${{ inputs.project_file }}" ]] && args+=" -project '${{ inputs.project_file }}'"
-            [[ -n "${{ inputs.key_file }}" ]] && args+=" -keyfile '${{ inputs.key_file }}'"
+            [[ -n "${{ inputs.key_file }}" ]] && args+=" -snkeypair  '${{ inputs.key_file }}'"
             [[ -n "${{ inputs.additional_arguments }}" ]] && args+=" ${{ inputs.additional_arguments }}"
 
             echo "Running: $command $args"
