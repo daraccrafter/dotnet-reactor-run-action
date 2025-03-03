@@ -24,55 +24,27 @@ inputs:
   license:
     description: 'Provide the .NET Reactor license as either a file path or a base64-encoded string. If no license is defined .NET Reactor runs as demo version.'
     required: false
-
+  reactordir:
+    required: true
 runs:
   using: "composite"
   steps:
-    - name: Check and Install .NET Reactor if needed
-      run: |
-        os_name=$(echo ${{ runner.os }} | tr '[:upper:]' '[:lower:]')
-        reactor_dir="${{ env.DOTNETREACTORROOT }}"
-
-        exe_name="dotNET_Reactor"
-        if [[ "${{ runner.os }}" == "Windows" ]]; then
-          exe_name="dotNET_Reactor.Console.exe"
-        fi
-
-        if [ ! -f "$reactor_dir/$exe_name" ]; then
-          echo "Installing latest .NET Reactor version..."
-
-          extract_dir="dotnet_reactor_${os_name}_latest"
-          download_url="https://raw.githubusercontent.com/eziriz/ReactorAction/main/versions/${os_name}_latest.zip"
-
-          echo "Downloading .NET Reactor ($download_url)..."
-          curl -L $download_url -o dotNetReactor.zip || { echo "Download failed"; exit 1; }
-
-          echo "Unzipping .NET Reactor to ${extract_dir}..."
-          if [ "${{ runner.os }}" = "Windows" ]; then
-            7z x -y dotNetReactor.zip -o./${extract_dir} || { echo "Unzip failed"; exit 1; }
-          else
-            unzip dotNetReactor.zip -d ${extract_dir} || { echo "Unzip failed"; exit 1; }
-          fi
-
-          echo "DOTNETREACTORROOT=$PWD/${extract_dir}" >> $GITHUB_ENV
-        fi
-      shell: bash
     - name: Configure License
       run: |
             if [ -n "${{ inputs.license }}" ]; then
               if echo "${{ inputs.license }}" | grep -Eq '(\.license|\.v3lic)$'; then
-                cp "${{ inputs.license }}" ${{ env.DOTNETREACTORROOT }}/license.v3lic
+                cp "${{ inputs.license }}" ${{ inputs.reactordir }}/license.v3lic
               else
-                echo "${{ inputs.license }}" | base64 --decode > ${{ env.DOTNETREACTORROOT }}/license.v3lic
+                echo "${{ inputs.license }}" | base64 --decode > ${{ inputs.reactordir }}/license.v3lic
               fi
             fi
       shell: bash
     - name: Execute .NET Reactor for multiple files (in-place)
       run: |
-        command="${{ env.DOTNETREACTORROOT }}/dotNET_Reactor"
+        command="${{ inputs.reactordir }}/dotNET_Reactor"
 
         if [[ "${{ runner.os }}" == "Windows" ]]; then
-          command="${{ env.DOTNETREACTORROOT }}/dotNET_Reactor.Console.exe"
+          command="${{ inputs.reactordir }}/dotNET_Reactor.Console.exe"
         else
           chmod +x "$command"
         fi
